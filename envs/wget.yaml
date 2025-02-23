@@ -1,0 +1,6 @@
+name: wget_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - wget

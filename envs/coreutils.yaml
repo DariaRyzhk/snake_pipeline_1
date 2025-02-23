@@ -1,0 +1,6 @@
+name: coreutils_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - coreutils
