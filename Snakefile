@@ -3,6 +3,7 @@ rule all:
     input:
         "results/genes_uniq_list.txt"
 
+# rule download_gtf: скачивает файл GTF с аннотациями генома и распаковывает его
 rule download_gtf:
     output:
         "results/GCF_000001405.13_GRCh37_genomic.gtf"
@@ -15,6 +16,7 @@ rule download_gtf:
         rm {output}.gz
         """
 
+# rule extract_genes_exons: извлекает гены и экзоны из GTF файла
 rule extract_genes_exons:
     input:
         "results/GCF_000001405.13_GRCh37_genomic.gtf"
@@ -31,6 +33,7 @@ rule extract_genes_exons:
             $3 == "exon" {{print $0 > "{output.exons}"}}' {input}
         """
 
+# rule intersect_genes: находит пересечение между BED и GTF файлами для генов
 rule intersect_genes:
     input:
         bed="data/IAD143293_241_Designed_formatRefSeq.bed",
@@ -44,6 +47,7 @@ rule intersect_genes:
         bedtools intersect -a {input.bed} -b {input.gtf} -wa -wb -nonamecheck > {output}
         """
 
+# rule extract_gene_names: извлекает названия генов из аннотированных данных
 rule extract_gene_names:
     input:
         "results/annotated_regions_genes_RefSeq.txt"
@@ -56,6 +60,7 @@ rule extract_gene_names:
         awk '{{print $1 "\\t" $4 "\\t" substr($16, 2, length($16)-3)}}' {input} > {output}
         """
 
+# rule intersect_exons: находит пересечение между BED и GTF файлами для экзонов
 rule intersect_exons:
     input:
         bed="data/IAD143293_241_Designed_formatRefSeq.bed",
@@ -71,6 +76,7 @@ rule intersect_exons:
             {{if ($3 == "exon") {{print $0, exon_number++}} else {{print $0, "."}}}}' > {output}
         """
 
+# rule extract_exon_info: извлекает информацию о экзонах, включая номер экзона
 rule extract_exon_info:
     input:
         "results/annotated_regions_genes_with_exons_RefSeq.txt"
@@ -83,6 +89,7 @@ rule extract_exon_info:
         awk '{{print $1 "\\t" $4 "\\t" substr($16, 2, length($16)-3) "\\t" substr($(NF-1), 2, 1)}}' {input} > {output}
         """
 
+# rule unique_gene_names: извлекает уникальные имена генов из списка
 rule unique_gene_names:
     input:
         "results/genes_with_e_list_awk_RefSeq.txt"
